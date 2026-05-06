@@ -42,9 +42,21 @@
                     @endif
 
                     @if($question->video_url)
-                        <div class="mt-4 aspect-w-16 aspect-h-9 max-w-xl">
-                            <iframe src="{{ str_replace('watch?v=', 'embed/', $question->video_url) }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="rounded-lg shadow-md border border-gray-600"></iframe>
-                        </div>
+                        @php
+                            $videoId = '';
+                            if (preg_match('/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i', $question->video_url, $matches)) {
+                                $videoId = $matches[1];
+                            }
+                        @endphp
+                        @if($videoId)
+                            <div class="mt-4 w-full max-w-xl">
+                                <iframe src="https://www.youtube.com/embed/{{ $videoId }}" width="100%" height="315" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="rounded-lg shadow-md border border-gray-600"></iframe>
+                            </div>
+                        @else
+                            <div class="mt-4 text-yellow-500 text-sm italic">
+                                Note: Invalid YouTube URL provided. The video cannot be displayed.
+                            </div>
+                        @endif
                     @endif
                 </div>
 
