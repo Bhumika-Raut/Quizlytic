@@ -23,5 +23,5 @@ RUN composer install --no-dev --optimize-autoloader
 RUN touch database/database.sqlite
 RUN chmod -R 777 storage bootstrap/cache database
 
-# Start the application, automatically migrating and seeding the database
-CMD php artisan migrate:fresh --seed --force && php artisan serve --host=0.0.0.0 --port=${PORT:-10000}
+# Start the application, preserving the local database data
+CMD php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=${PORT:-10000}
