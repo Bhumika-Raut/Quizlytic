@@ -1,6 +1,6 @@
 # AI Usage Document
 
-This document details how AI assistance was utilized to architect, develop, and refine the Dynamic Quiz System in Laravel. The AI acted as a pair-programmer, accelerating development while strictly adhering to the assignment's technical requirements and best practices.
+This document details how AI assistance was utilized to architect, develop, deploy, and debug the Dynamic Quiz System in Laravel. The AI acted as a pair-programmer, accelerating development while strictly adhering to the assignment's technical requirements and best practices.
 
 ## Prompts and Objectives
 
@@ -17,17 +17,20 @@ This document details how AI assistance was utilized to architect, develop, and 
 ### 3. Frontend & Question Editor
 **Objective:** Build a dynamic Question Editor with media support and rich text formatting without relying on massive JS frameworks.
 **AI Assistance:** We requested the AI to integrate a Rich Text Editor and handle local file uploads via Blade.
-**Result:** The AI successfully integrated `Quill.js` via CDN and provided lightweight Vanilla JavaScript to dynamically spawn new "Option" fields on the form. It also properly set up `php artisan storage:link` interactions to ensure uploaded images were served correctly via local storage.
+**Result:** The AI successfully integrated `Quill.js` via CDN and provided lightweight Vanilla JavaScript to dynamically spawn new "Option" fields on the form. It also properly set up `php artisan storage:link` interactions.
 
-## Corrections and Iterations
-- **Issue:** Initially, the system would fail if a user submitted a Multiple Choice question completely blank (unchecked checkboxes).
-- **Correction:** We analyzed the `QuizAttemptService` and recognized that looping through `$userResponses` (the HTTP request array) would skip unanswered questions. We instructed the AI to refactor the loop to iterate over the *actual quiz questions* (`$quiz->questions`), ensuring that missing responses were elegantly saved as `null` and scored as `0`, preventing critical logic failures.
-- **Issue:** `server.php` was missing from the project root causing `php artisan serve` issues.
-- **Correction:** We utilized the AI to diagnose the missing dependency and provisioned a custom `server.php` alongside running `composer install` to restore stability.
+## Advanced Iterations & Debugging
 
-### 4. Phase 1-7 Refactoring (High-Impact Features)
-**Objective:** Add robust features like Topics Filtering, Difficulty Metrics, and Attempt Review Mode to elevate the application to a senior level.
-**AI Assistance:** The AI was prompted to execute a multi-phase implementation plan. It added migrations for `topics` and modified `questions` to include `difficulty` and `explanation`. It successfully re-engineered the `attempts/show.blade.php` view to implement the **Attempt Review Mode**, mapping correct/incorrect answers dynamically to Tailwind CSS color logic. It also implemented **Randomization** by writing logic in `QuizController` to shuffle questions and options dynamically using Laravel Collections before returning the view.
+### 4. Media Embedding & Regex Bugfixes
+**Objective:** Support external media (specifically YouTube videos) seamlessly inside quiz questions without relying on the user to format iframe tags manually.
+**AI Assistance:** We prompted the AI to render YouTube links. Initially, the AI used a simple `str_replace` to swap `/watch?v=` with `/embed/`.
+**Correction & Iteration:** When testing with YouTube Shorts URLs (`/shorts/`), the simple string replacement failed, resulting in a "Refused to Connect" browser error due to `X-Frame-Options: SAMEORIGIN`. The AI identified the issue and completely rewrote the extraction logic using a highly robust Regular Expression (`preg_match`). This auto-parser now flawlessly detects standard URLs, short links (`youtu.be`), and YouTube Shorts, extracting the 11-character Video ID to construct a guaranteed working embed frame.
+
+### 5. Dockerization & Deployment
+**Objective:** Deploy the application to Render.com using a completely free, ephemeral cloud setup.
+**AI Assistance:** We instructed the AI to prepare the application for Render using Docker.
+**Result:** The AI wrote a custom `Dockerfile` mapped to a specific PHP Apache environment. During testing, we encountered an issue where Render deployed a completely blank database, missing our heavily seeded "Fair Data".
+**Correction:** The AI performed deep terminal analysis via `git status` and discovered that Laravel's default `database/.gitignore` contained a `*.sqlite*` rule, which was silently blocking our local database from being uploaded to GitHub. The AI modified the `.gitignore` rules, allowing the pre-populated SQLite database to be version-controlled, resulting in a flawless deployment that preserves data across Render restarts.
 
 ## Conclusion
-The AI was an invaluable asset in architecting the Design Patterns, generating tedious CRUD boilerplate, and implementing complex DOM manipulation scripts for the Blade interface. However, deep human review was continuously required to refine the logic—specifically regarding HTTP validation gaps, unchecked input handling, and architectural decoupled patterns.
+The AI was an invaluable asset in architecting the Design Patterns, generating tedious CRUD boilerplate, containerizing the application, and debugging complex deployment pipelines. However, deep human review was continuously required to refine the logic—specifically regarding HTTP validation gaps, unchecked input handling, and architectural decoupled patterns.
