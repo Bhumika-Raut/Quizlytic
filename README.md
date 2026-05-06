@@ -104,3 +104,5 @@ git commit -m "Add new quiz content"
 git push
 ```
 Render will automatically pull the changes and hot-swap the live database without losing data.
+
+Deployed link: https://quizlytic.onrender.com/quizzes
